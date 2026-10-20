@@ -1,29 +1,36 @@
-- name: Fork Sync2
-  # You may pin to the exact commit or the version.
-  # uses: zwping/fork-sync@7ad9681518d04008cc8f056abed8fefc2902e96d
-  uses: zwping/fork-sync@v1.6.5
-  with:
-    # Owner of the forked repository
-    owner: # optional
-    # Token for the github API
-    token: # optional, default is ${{ github.token }}
-    # Branch to track
-    head: # optional, default is master
-    # Branch to keep updated
-    base: # optional, default is master
-    # Merge method to use
-    merge_method: # optional, default is merge
-    # The title of the pull request
-    pr_title: # optional, default is Fork Sync: Update from parent repository
-    # The message in the pull request
-    pr_message: # optional
-    # Ignore Exceptions
-    ignore_fail: # optional
-    # Automatically approve pull request before merge
-    auto_approve: # optional
-    # Automatically merge the pull request
-    auto_merge: # optional, default is true
-    # Retry count
-    retries: # optional, default is 4
-    # Delay amount between retries
-    retry_after: # optional, default is 60
+name: Sync Fork from Upstream
+
+on:
+  schedule:
+    # 每 6 小时运行一次（UTC 时间：00:00、06:00、12:00、18:00）
+    - cron: '0 */6 * * *'
+  workflow_dispatch:   # 允许在 Actions 页面手动触发测试
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fork Sync
+        uses: zwping/fork-sync@v1.6.5
+        with:
+          # 上游仓库所有者，不是你 fork 的用户名
+          owner: YuJunZhiXue
+          token: ${{ github.token }}
+
+          # 上游被跟踪分支
+          head: master
+
+          # 你 fork 仓库中要保持更新的分支
+          base: master
+
+          merge_method: merge
+          pr_title: 'Fork Sync: Update from YuJunZhiXue/dsh-purge'
+          pr_message: 'Sync master from upstream YuJunZhiXue/dsh-purge'
+          ignore_fail: false
+          auto_merge: true
+          retries: 4
+          retry_after: 60
